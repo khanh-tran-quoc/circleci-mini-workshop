@@ -31,7 +31,7 @@ jobs:
           paths:
             - vendor/bundle
       - run:
-          command: bundle exec rubocop
+          command: bundle exec rspec
 
 workflows:
   setup:
