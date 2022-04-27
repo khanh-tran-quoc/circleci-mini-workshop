@@ -1,17 +1,42 @@
 version: 2.1
 
 jobs:
-  setup:
+  test-rubocop:
     docker:
       - image: cimg/ruby:2.7.4
     steps:
       - checkout
+      - restore_cache:
+          key: gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
       - run:
           command: bundle install
+      - save_cache:
+          key: gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
       - run:
-          command: bundle exec rspec
+          command: bundle exec rubocop
+
+  test-rspec:
+    docker:
+      - image: cimg/ruby:2.7.4
+    steps:
+      - checkout
+      - restore_cache:
+          key: gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+      - run:
+          command: bundle install
+      - save_cache:
+          key: gem-cache-v1-{{ arch }}-{{ .Branch }}-{{ checksum "Gemfile.lock" }}
+          paths:
+            - vendor/bundle
+      - run:
+          command: bundle exec rubocop
 
 workflows:
   setup:
     jobs:
-      - setup
+      - test-rubocop
+      - test-rspec:
+          requires:
+            - test-rubocop
