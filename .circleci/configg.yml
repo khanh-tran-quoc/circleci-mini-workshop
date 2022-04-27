@@ -12,9 +12,11 @@ jobs:
     steps:
       - checkout
       - run:
-          command: bundle install
-      - run:
-          command: bundle install
+          name: Generate config
+          command: |
+            ruby .circleci/generate_config.rb
+      - continuation/continue:
+          configuration_path: .circleci/config-generated.yml
 
 workflows:
   setup:
